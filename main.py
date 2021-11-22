@@ -4,11 +4,11 @@ from queue import PriorityQueue
 
 WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH, WIDTH))
-pygame.display.set_caption("A* Pathfinding Algorithm")
+pygame.display.set_caption("A* Path Finding Algorithm")
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+BLUE = (0, 255, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -18,19 +18,20 @@ GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
 
 
-class Node:
-    def __init__(self, row, column, width, row_sum):
-        self.row = row
-        self.column = column
-        self.x = row * width
-        self.y = column * width
-        self.color = WHITE
-        self.neigbors = []
-        self.width = width
-        self.row_sum = row_sum
+class Spot:
 
-    def get_position(self):
-        return self.row, self.column
+    def __init__(self, row, col, width, total_rows):
+        self.row = row
+        self.col = col
+        self.x = row * width
+        self.y = col * width
+        self.color = WHITE
+        self.neighbors = []
+        self.width = width
+        self.total_rows = total_rows
+
+    def get_pos(self):
+        return self.row, self.col
 
     def is_closed(self):
         return self.color == RED
@@ -48,7 +49,10 @@ class Node:
         return self.color == TURQUOISE
 
     def reset(self):
-        return self.color == WHITE
+        self.color = WHITE
+
+    def make_start(self):
+        self.color = ORANGE
 
     def make_closed(self):
         self.color = RED
@@ -65,11 +69,8 @@ class Node:
     def make_path(self):
         self.color = PURPLE
 
-    def define_draw(self, win):
+    def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.width))
-
-    def update_neighbors(self, grid):
-        pass
 
     def __lt__(self, other):
         return False
@@ -87,12 +88,12 @@ def make_grid(rows, width):
     for i in range(rows):
         grid.append([])
         for j in range(rows):
-            node = Node(i, j, gap, rows)
-            grid[i].append(node)
+            spot = Spot(i, j, gap, rows)
+            grid[i].append(spot)
     return grid
 
 
-def draw_grid_lines(win, rows, width):
+def draw_grid(win, rows, width):
     gap = width // rows
     for i in range(rows):
         pygame.draw.line(win, GREY, (0, i * gap), (width, i * gap))
@@ -103,7 +104,53 @@ def draw_grid_lines(win, rows, width):
 def draw(win, grid, rows, width):
     win.fill(WHITE)
     for row in grid:
-        for node in row:
-            node.draw(win)
-    draw_grid_lines(win, rows, width)
+        for spot in row:
+            spot.draw(win)
+    draw_grid(win, rows, width)
     pygame.display.update()
+
+
+def get_clicked_pos(pos, rows, width):
+    gap = width // rows
+    y, x = pos
+    row = y // gap
+    col = x // gap
+    return row, col
+
+
+def main(win, width):
+    ROWS = 50
+    grid = make_grid(ROWS, width)
+
+    start = None
+    end = None
+
+    run = True
+    while run:
+        draw(win, grid, ROWS, width)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if pygame.mouse.get_pressed()[0]:  # LEFT
+                pos = pygame.mouse.get_pos()
+                row, col = get_clicked_pos(pos, ROWS, width)
+                spot = grid[row][col]
+                if not start and spot != end:
+                    start = spot
+                    start.make_start()
+
+                elif not end and spot != start:
+                    end = spot
+                    end.make_end()
+
+                elif spot != end and spot != start:
+                    spot.make_barrier()
+
+            elif pygame.mouse.get_pressed()[2]:
+                pass
+
+    pygame.quit()
+
+
+main(WIN, WIDTH)
