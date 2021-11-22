@@ -86,5 +86,4 @@ def make_grid(rows, width):
         for j in range(rows):
             node = Node(i, j, gap, rows)
             grid[i].append(node)
-
-
+    return grid
