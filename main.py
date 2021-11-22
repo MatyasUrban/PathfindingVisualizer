@@ -13,8 +13,10 @@ YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 PURPLE = (128, 0, 128)
-ORANGE = (128, 128, 128)
+ORANGE = (255, 165, 0)
+GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
+
 
 class Node:
     def __init__(self, row, column, width, row_sum):
@@ -78,6 +80,7 @@ def h(p1, p2):
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
 
+
 def make_grid(rows, width):
     grid = []
     gap = width // rows
@@ -87,3 +90,20 @@ def make_grid(rows, width):
             node = Node(i, j, gap, rows)
             grid[i].append(node)
     return grid
+
+
+def draw_grid_lines(win, rows, width):
+    gap = width // rows
+    for i in range(rows):
+        pygame.draw.line(win, GREY, (0, i * gap), (width, i * gap))
+        for j in range(rows):
+            pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
+
+
+def draw(win, grid, rows, width):
+    win.fill(WHITE)
+    for row in grid:
+        for node in row:
+            node.draw(win)
+    draw_grid_lines(win, rows, width)
+    pygame.display.update()
