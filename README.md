@@ -1,8 +1,8 @@
-#Pathfinding Visualizer
+# Pathfinding Visualizer
 This interactive python program allows you to choose start position, end position, and obstacles in a grid. It then finds the shortest path using A* Pathfinding Algorithm.
-##Prerequisites
+## Prerequisites
 You need to have Python 3 and Pygame installed on your device to run the script.
-##How to use it
+## How to use it
 1. Run the program. Window with a 50x50 grid should open.
 ![Grid](images/grid.png)
 2. Click on any position in the grid. This will be the start position (denoted by orange color).
